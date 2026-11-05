@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from core import App
-    from sprites import BaseSprite, Button
+    from sprites import BaseSprite, Button, TextOutlined
 
 import arcade
 
@@ -28,7 +28,7 @@ class BaseView(arcade.View, ABC):
         self.sound_manager = self.window.sound_manager
         self.bg_sprites = arcade.SpriteList()
         self.sprites: arcade.SpriteList[BaseSprite] = arcade.SpriteList()
-        self.text_objects: list[arcade.Text] = []
+        self.text_objects: list[arcade.Text | TextOutlined] = []
         if bg_name:
             self.make_bg(bg_name)
         self.buttons_callbacks: dict[str, Callable] = {}

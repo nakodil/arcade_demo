@@ -1,6 +1,5 @@
 """Модуль приложения."""
 
-
 from collections.abc import Generator
 
 import arcade
@@ -59,13 +58,15 @@ class App(arcade.Window):
 
         textures_names = utils.get_filenames(config.IMG_DIR, config.IMG_EXTENSIONS)
         sounds_names = utils.get_filenames(config.SOUND_DIR, config.SOUND_EXTENSIONS)
+        fonts_names = utils.get_filenames(config.FONT_DIR, config.FONT_EXTENSIONS)
 
-        assets_count = (len(textures_names) + len(sounds_names))
+        assets_count = (len(textures_names) + len(sounds_names) + len(fonts_names))
         if assets_count:
             load_step = round(100 / assets_count)
         else:
             load_step = 100
-        file_names = textures_names + sounds_names
+
+        file_names = textures_names + sounds_names + fonts_names
         for file_name in file_names:
             name, extension = file_name.rsplit(".", 1)
             extension = extension.lower()
@@ -74,8 +75,12 @@ class App(arcade.Window):
             elif extension in config.SOUND_EXTENSIONS:
                 sound = arcade.load_sound(config.SOUND_DIR / file_name)
                 self.sound_manager.add_sound(name, sound)
-            percentage += load_step
-            percentage = min(percentage, 100)
+
+            elif extension in config.FONT_EXTENSIONS:
+                font_path = config.FONT_DIR / file_name
+                arcade.load_font(font_path)
+
+            percentage = min(percentage + load_step, 100)
             yield percentage
 
     def on_setup(self) -> None:

@@ -7,7 +7,7 @@ from functools import partial
 import arcade
 
 import config
-from sprites import Button
+from sprites import Button, TextOutlined
 
 from .base_view import BaseView
 
@@ -23,14 +23,16 @@ class MenuView(BaseView):
         """
         super().__init__("menu_bg")
 
-        self.title = arcade.Text(
+        self.title = TextOutlined(
             config.TITLE,
             self.window.width // 2,
-            int(self.window.height * 0.9),
+            int(self.window.height * 0.8),
             anchor_x="center",
             anchor_y="center",
+            font_name=config.FONT_TITLE,
             font_size=100,  # TODO: рассчитать от размера окна
-            color=arcade.color.BLUE,
+            color=arcade.color.WHITE,
+            outline_width=5,
         )
         self.text_objects.append(self.title)
         self.make_buttons()
@@ -81,34 +83,34 @@ class MenuView(BaseView):
         """Создает вертикальный ряд кнопок с отступами в центре экрана."""
         self.buttons.clear()
         self.make_buttons_callbacks()
-
         if not self.buttons_callbacks:
             return
 
-        # Хардкод!
         v_space = 30
-        button_height = 100
-        button_width = 300
-
-        total_height = (
-            len(self.buttons_callbacks) * button_height
-            + (len(self.buttons_callbacks) - 1) * v_space
-        )
-
         x = self.window.width // 2
+        temp_y = 0  # сначала у всех кнопок одинаковый y
 
-        top = (self.window.height + total_height) // 2  # Верхний край первой кнопки
-        # Центр первой (верхней) кнопки
-        y = top - button_height // 2
-
+        temp_buttons: list[Button] = []
         for label_text, callback in self.buttons_callbacks.items():
             button = Button(
                 x,
-                int(y),
-                width=button_width,
-                height=button_height,
+                temp_y,
                 callback=callback,
                 label_text=label_text,
             )
+            temp_buttons.append(button)
+
+        # Высота всего блока кнопок
+        heights = [btn.height for btn in temp_buttons]
+        total_height = sum(heights) + (len(heights) - 1) * v_space
+
+        # Верхний край первой кнопки
+        top = (self.window.height + total_height) / 2
+
+        current_top = top
+        for button, height in zip(temp_buttons, heights, strict=True):
+            button.center_y = current_top - height / 2
+            button.label.x = button.center_x
+            button.label.y = button.center_y
             self.buttons.append(button)
-            y -= button_height + v_space
+            current_top -= height + v_space

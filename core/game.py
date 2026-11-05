@@ -7,10 +7,12 @@ from typing import TYPE_CHECKING
 
 import arcade
 
-from sprites import BaseSprite, Mouse, Player
+from sprites import BaseSprite, Mouse, Player, TextOutlined
 
 if TYPE_CHECKING:
     from core.app import App
+
+import config
 
 
 class Game:
@@ -26,13 +28,15 @@ class Game:
         self.mice_spawn_interval = 1.0
         self.mice_spawn_timer = 0.0
 
-        self.score_text = arcade.Text(
+        self.score_text = TextOutlined(
             "0",
             window.width // 2,
             int(window.height * 0.9),
+            font_name=config.FONT_LABEL,
             font_size=100,
             anchor_x="center",
             anchor_y="center",
+            outline_width=5,
         )
 
     def start_new_game(self) -> None:
